@@ -15,11 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MotorControl.ino" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Visual Micro\.MotorControl.vsarduino.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="MotorStructure.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MotorControl.ino" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MotorStructure.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

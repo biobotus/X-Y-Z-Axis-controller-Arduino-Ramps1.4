@@ -83,4 +83,7 @@ extern "C" void __cxa_pure_virtual() {;}
 #define portInputRegister(P)
 #define portModeRegister(P)
 #include <MotorControl.ino>
+#include <Defines.h>
+#include <MotorStructure.cpp>
+#include <MotorStructure.h>
 #endif
