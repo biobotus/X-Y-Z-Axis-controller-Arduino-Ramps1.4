@@ -16,44 +16,43 @@ public:
 	long currentPositionSubsteps;
 	long desiredPositionSubsteps;
 	long speed;
-	long homingSpeed;
+	long initialHomingSpeed;
 	const long pintStep;
 	const long pinDir;
 	const long pinEnable;
 	const long pinLimitSwitch;
 	long maxPositionSubsteps;
+	long maxPosition;	// In mm*10
 	const long mm_per_step; //Saved in micrometers onto an integer -> 0.127mm is save as 127 
 	const long number_of_substep;
 	int towardHomeDirection;
 	int leavingHomedirection;
+	int maxDelay; // Slowest speed
+	int maxRamp;
+	int cruisingSpeedDelay;	
 
 	void setDesiredPositionSubsteps(String desiredPos)
 	{
-		int desiredPositionInt = desiredPos.toInt();
-		float desiredPositionFloat = (float)desiredPositionInt / 10;
+		char temp[128] = { 0 };
+		desiredPos.toCharArray(temp, sizeof(temp), 0);
+
+		//int desiredPositionInt = desiredPos.toInt();
+		long desiredPositionLong = atol(temp);
+
+		// clamping the value:
+		if (desiredPositionLong > this->maxPosition)
+		{
+			desiredPositionLong = this->maxPosition;
+		}
+
+		float desiredPositionFloat = (float)desiredPositionLong / 10;
 		double millimeterPerStep = (double)mm_per_step / 1000;
 		double InvertedMillimeterPerStep = (double)(1 / millimeterPerStep);
 		double desiredPositionSubstepsVariable = (double)(desiredPositionFloat*InvertedMillimeterPerStep*number_of_substep);
-		desiredPositionSubsteps = desiredPositionSubstepsVariable;
 
-		/*
-		Serial.println(F("Text to parse : "));
-		Serial.println(desiredPos);
 		
-		Serial.println(F("Desired position converted to int : "));
-		Serial.println(desiredPositionInt);
-		
-		Serial.println(F("Desired position converted to float : "));
-		Serial.println(desiredPositionFloat);
-		
-		Serial.println(F("Micrometer per step value : "));
-		Serial.println(millimeterPerStep);
-		
-		Serial.println(F("Inverted mm_per_step : "));
-		Serial.println(InvertedMillimeterPerStep);
-		
-		Serial.println(F("Position substeps value: "));
-		Serial.println(desiredPositionSubstepsVariable);*/		
+		// Setting the object's property
+		this->desiredPositionSubsteps = desiredPositionSubstepsVariable;
 	}
 
 	void setMaxPositionSubsteps(String maximum)
