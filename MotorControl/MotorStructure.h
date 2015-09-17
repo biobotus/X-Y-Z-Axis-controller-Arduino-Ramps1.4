@@ -12,60 +12,51 @@ public:
 	// float desiredPosition = (float)SerialValueReceived/10.
 	// int desiredPositionSubsteps = (int)((1/desiredPosition)*(mm_per_step/1000))/number_of_substep;
 
-	long lastPositionSubsteps; // Saved in substeps -> Ex. Moving 1264.5mm (sent as 12645 on an integer by the user) -> lastPosition = 1264
-	long currentPositionSubsteps;
-	long desiredPositionSubsteps;
-	long speed;
-	long initialHomingSpeed;
-	const long pintStep;
-	const long pinDir;
-	const long pinEnable;
-	const long pinLimitSwitch;
-	long maxPositionSubsteps;
-	long maxPosition;	// In mm*10
-	const long mm_per_step; //Saved in micrometers onto an integer -> 0.127mm is save as 127 
-	const long number_of_substep;
-	int towardHomeDirection;
-	int leavingHomedirection;
-	int maxDelay; // Slowest speed
-	int maxRamp;
-	int cruisingSpeedDelay;	
+	int _pinStep;
+	int _pinDir;
+	int _pinEnable;
+	int _pinLimitSwitch;	
+	long _maxPosition;	// In mm*10
+	long _mm_per_step; //Saved in micrometers onto an integer -> 0.127mm is saved as 127 
+	bool _invertedDirection;	// Tells that the direction must be inverted to work properly
+	unsigned int _maxSpeed = 180;	// In mm/sec
+	unsigned int _currentSpeed = 120;	// In mm/sec
+	unsigned int _homingSpeedDelay = 80;
+	long _currentPositionSubsteps = 0;
+	long _lastPositionSubsteps = 0; // Saved in substeps -> Ex. Moving 1264.5mm (sent as 12645 on an integer by the user) -> lastPosition = 1264	
+	long _desiredPositionSubsteps = 0;
+	long _maxPositionSubsteps = 0;
+	long _microstepsPerStep = 16;
+	bool _towardHomePinState = LOW;
+	bool _leavingHomePinState = HIGH;
+	long _cruisingSpeedDelay;
+	const int _initialDelay = 150;	// Delay in microseconds between each substep when starting to move
+	const int _finalDelay = 1000;	// Delay in microseconds between each substep when stopping to move
 
-	void setDesiredPositionSubsteps(String desiredPos)
-	{
-		char temp[128] = { 0 };
-		desiredPos.toCharArray(temp, sizeof(temp), 0);
+	// Functions
+	void setDesiredPositionSubsteps(String desiredPos);
 
-		//int desiredPositionInt = desiredPos.toInt();
-		long desiredPositionLong = atol(temp);
+	void setMaxPositionSubsteps(String maximum);
 
-		// clamping the value:
-		if (desiredPositionLong > this->maxPosition)
-		{
-			desiredPositionLong = this->maxPosition;
-		}
+	void moveMotorWithKindOfTrajectory(void);
 
-		float desiredPositionFloat = (float)desiredPositionLong / 10;
-		double millimeterPerStep = (double)mm_per_step / 1000;
-		double InvertedMillimeterPerStep = (double)(1 / millimeterPerStep);
-		double desiredPositionSubstepsVariable = (double)(desiredPositionFloat*InvertedMillimeterPerStep*number_of_substep);
+	void goHome(void);
 
-		
-		// Setting the object's property
-		this->desiredPositionSubsteps = desiredPositionSubstepsVariable;
-	}
+	int moveMotor(void);
 
-	void setMaxPositionSubsteps(String maximum)
-	{
-		int maximumInint = maximum.toInt();
-		float maximumFloat = (float)maximumInint / 10;
-		double millimeterPerStep = (double)mm_per_step / 1000;
-		double InvertedMillimeterPerStep = (double)(1 / millimeterPerStep);
-		double maximumSubsteps = (double)(maximumFloat*InvertedMillimeterPerStep*number_of_substep);
-		maxPositionSubsteps = maximumSubsteps;
-	}
-	//Motor(int lastPos, int currentPos, int nextPos, int pin_step, int pin_dir, int pin_enable, int pin_limitSwitch);
+	int moveMotorTrapeizodally(void);
 
+	int moveMotorTrapezoidally(void);
+
+	void setSpeed(unsigned int speed);
+
+	void testMaxSpeed(String desiredPosition, int minimalDelay);
+
+	void moveTo(String desiredPosition, unsigned int speed);	// position in mm*10 --> for a 23.4mm movement, input 234, speed in mm/s directly (integer only)
+	
+	Motor(int pin_step, int pin_dir, int pin_enable, int pin_limitSwitch, long maxPosition, long mmPerStep, long microstepsPerStep, bool invertedDirection, int maxSpeed);
+	
+	
 };
 // the #include statment and code go here...
 
