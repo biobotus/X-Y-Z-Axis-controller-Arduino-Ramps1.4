@@ -30,11 +30,11 @@ void Motor::setSpeedAndDelay(unsigned int desiredSpeed)
 {
 	if (desiredSpeed > _maxSpeed)
 	{
-		_currentSpeed = _maxSpeed;
+		_desiredCruisingSpeed = _maxSpeed;
 	}
 	else if(desiredSpeed > 0)
 	{
-		_currentSpeed = desiredSpeed;
+		_desiredCruisingSpeed = desiredSpeed;
 	}
 	else
 	{
@@ -43,7 +43,7 @@ void Motor::setSpeedAndDelay(unsigned int desiredSpeed)
 	
 	// Set the delay (in microseconds) according to the set speed
 	int delay = 0;
-	delay = (1 / (_microstepsPerStep * _currentSpeed / _mm_per_step)) * 1000000;
+	delay = (1 / (_microstepsPerStep * _desiredCruisingSpeed / _mm_per_step)) * 1000000;
 
 	_cruisingSpeedDelay = delay;
 }
@@ -51,7 +51,7 @@ void Motor::setSpeedAndDelay(unsigned int desiredSpeed)
 // Desired position in mm coming from serial port, acceleration ramp in delay (microseconds), and speed set in mm/s
 void Motor::testMaxSpeed(String desiredPosition, int delayVariation, int cruiseSpeed)
 {
-	long stepCounter = 0;	// Will hold the step count to know when to change delay to affect speed accordingly
+	long microStepCounter = 0;	// Will hold the step count to know when to change delay to affect speed accordingly
 	long decelStepCounter = 0;	// Will hold the step count related to deceleration only
 
 	// Clamping the distance to travel
@@ -83,7 +83,7 @@ void Motor::testMaxSpeed(String desiredPosition, int delayVariation, int cruiseS
 	*/
 
 
-	Serial.println("Steps to perform: ");
+	Serial.println("Steps to travel: ");
 	Serial.println(stepsToTravel);
 	Serial.println("Variation: ");
 	Serial.println(delayVariation);
@@ -91,50 +91,45 @@ void Motor::testMaxSpeed(String desiredPosition, int delayVariation, int cruiseS
 	Serial.println(_desiredPositionSubsteps);
 
 	long cruisePoint = (float)(_initialDelay-_cruisingSpeedDelay)/delayVariation;	//(float)0.1*stepsToTravel;
-	Serial.println("Microsteps to travel accelerating: ");
-	Serial.println(cruisePoint);
 
 	long decelPoint = stepsToTravel - cruisePoint;
 
-	float accelIncrement = (float)(_initialDelay - cruiseSpeed) / (cruisePoint);	//(100000 * diff) / divider;
-	float decelerationIncrement = (float)(_finalDelay - cruiseSpeed) / (decelPoint);
 	int currentDelay = _initialDelay;	
 
 	Serial.println("Direction: ");
 	Serial.println(movementDirection);
-	Serial.println("Steps to travel: ");
-	Serial.println(stepsToTravel);
 	Serial.println("Initial delay: ");
 	Serial.println(_initialDelay);
-	Serial.println("minimal delay: ");
+	Serial.println("cruising speed : ");
 	Serial.println(cruiseSpeed);
+	Serial.println("cruising speed delay: ");
+	Serial.println(_cruisingSpeedDelay);
 
-	Serial.println("decelerationIncrement: ");
-	Serial.println(decelerationIncrement);
 	Serial.println("Cruise point: ");
 	Serial.println(cruisePoint);
 	Serial.println("Deceleration point: ");
 	Serial.println(decelPoint);
-	Serial.println("Accel increment: ");
-	Serial.println(accelIncrement);
 
-	while (stepCounter <= stepsToTravel)
+
+	while (microStepCounter < stepsToTravel)
 	{
-		/*digitalWrite(_pinStep, HIGH);
-		delayMicroseconds(4);
-		digitalWrite(_pinStep, LOW);	*/	
+		digitalWrite(_pinStep, HIGH);
+		delayMicroseconds(2);
+		digitalWrite(_pinStep, LOW);		
 
-		if (stepCounter >= 0 && stepCounter < cruisePoint)
+		if (microStepCounter >= 0 && microStepCounter < cruisePoint)
 		{
-			delayMicroseconds(currentDelay - delayVariation);
+			currentDelay = currentDelay - delayVariation;
+			delayMicroseconds(currentDelay);
 		}
-		else if (stepCounter >= cruisePoint && stepCounter < decelPoint)
+		else if (microStepCounter >= cruisePoint && microStepCounter < decelPoint)
 		{
 			delayMicroseconds(_cruisingSpeedDelay);
 		}
 		else
 		{
-			delayMicroseconds((int)(currentDelay + delayVariation));
+			currentDelay = currentDelay + delayVariation;
+			delayMicroseconds(currentDelay);
 		}
 
 		if (movementDirection == _leavingHomePinState)
@@ -145,12 +140,13 @@ void Motor::testMaxSpeed(String desiredPosition, int delayVariation, int cruiseS
 		{
 			_currentPositionSubsteps = _currentPositionSubsteps - 1;
 		}
-		stepCounter += 1;
+		microStepCounter += 1;
 
 	}
+
 	if (_currentPositionSubsteps == _desiredPositionSubsteps)
 	{
-		Serial.println("Destination reached!!!");
+		Serial.println("Destination reached");
 	}
 	digitalWrite(_pinEnable, HIGH);	// Disable driver
 }
@@ -225,11 +221,11 @@ void Motor::moveTo(String desiredPosition, unsigned int speed)
 	setSpeedAndDelay(speed);
 
 	// Compute delay at cruise speed (defined by user)
-	float cruiseSpeedDelay = (float)(((float)(_mm_per_step/1000)*_microstepsPerStep)/ _currentSpeed);	// This is the minimal delay between steps
+	float cruiseSpeedDelay = (float)(((float)(_mm_per_step/1000)*_microstepsPerStep)/ _desiredCruisingSpeed);	// This is the minimal delay between steps
 	Serial.println("cruise speed delay: ");
 	Serial.println(cruiseSpeedDelay);
 	Serial.println("current speed ");
-	Serial.println(_currentSpeed);
+	Serial.println(_desiredCruisingSpeed);
 	Serial.println("mm per step: ");
 	Serial.println(_mm_per_step);
 	Serial.println("microsteps per step ");
@@ -318,8 +314,8 @@ void Motor::moveToWithTriangularSpeedProfile()
 
 	long stepCounter = 0;	// Will hold the step count to know when to change delay to affect speed accordingly
 	long stepsToTravel = abs(_desiredPositionSubsteps - _currentPositionSubsteps);
-	int initialDelay = 20;
-	int maxSpeedDelay = 2;	// Smaller is faster
+	int initialDelay = 80;
+	int maxSpeedDelay = 16;	// Smaller is faster
 	long diff = initialDelay - maxSpeedDelay;
 	long divider = (long)stepsToTravel / 2;
 	float increment = (100000 * diff) / divider;
@@ -385,43 +381,6 @@ void Motor::moveToWithTriangularSpeedProfile()
 	}
 	Serial.println("Disabling motor");
 	digitalWrite(_pinEnable, HIGH);// disable
-}
-
-// Not used
-int Motor::moveMotor()
-{
-#ifdef DEBUG_PRINT
-	Serial.println(F("Desired substeps to do : "));
-	Serial.println(motorToMove->desiredPositionSubsteps);
-	Serial.print(F("Current position (in substeps): "));
-	Serial.println(motorToMove->currentPositionSubsteps);
-#endif	
-
-	int movementDirection = ((_desiredPositionSubsteps - _currentPositionSubsteps) > 0 ? _leavingHomePinState : _towardHomePinState);
-	_lastPositionSubsteps = _currentPositionSubsteps;
-	digitalWrite(_pinEnable, LOW);// enable
-	digitalWrite(_pinDir, movementDirection);  // Set direction
-
-	while (_currentPositionSubsteps != _desiredPositionSubsteps)
-	{
-		digitalWrite(_pinStep, HIGH);
-		delayMicroseconds(20);
-		digitalWrite(_pinStep, LOW);
-		//delayMicroseconds(motorToMove->initialHomingSpeed);
-
-		delayMicroseconds(30);//200);
-
-		if (movementDirection == _leavingHomePinState)
-		{
-			_currentPositionSubsteps += 1;
-		}
-		else
-		{
-			_currentPositionSubsteps = _currentPositionSubsteps - 1;
-		}
-	}
-	digitalWrite(_pinEnable, HIGH);// disable
-	return 1;
 }
 
 // Not used

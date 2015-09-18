@@ -27,7 +27,7 @@ public:
 	bool _leavingHomePinState = HIGH;
 
 	// Internal variables
-	unsigned int _currentSpeed = 120;	// In mm/sec
+	unsigned int _desiredCruisingSpeed = 120;	// In mm/sec
 	long _currentPositionSubsteps = 0;	// Keeps tracks of the current position in substeps
 	long _lastPositionSubsteps = 0;		// Saved in substeps -> Ex. Moving 1264.5mm (sent as 12645 on an integer by the user) -> lastPosition = 1264	
 	long _desiredPositionSubsteps = 0;	// Desired position, in substeps, will change according to number of microsteps per full step for each motor
@@ -54,7 +54,7 @@ public:
 
 	void stop(void);
 
-	void testMaxSpeed(String desiredPosition, int delayVariation, int cruiseSpeed);
+	void testMaxSpeed(String desiredPosition, int delayVariation, int cruiseSpeed); // delayVariation in microseconds per microstep, cruiseSpeed in mm/s
 
 	void moveTo(String desiredPosition, unsigned int speed);	// position in mm*10 --> for a 23.4mm movement, input 234, speed in mm/s directly (integer only)
 	

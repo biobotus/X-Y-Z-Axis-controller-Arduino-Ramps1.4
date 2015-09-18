@@ -13,7 +13,7 @@
 #define MAX_POSITION_X			12050		// Maximum position in mm X 10.
 #define MAX_SPEED_X				180	// TODO: update this value to be representative
 #define MM_PER_STEP_X			127         //0.127 (Saved in micrometers per step to fit nicely on an integer)
-#define HOMING_DELAY_X			60			//step speed (delay between steps)
+#define HOMING_DELAY_X			80		// microstep speed (delay between substeps)
 #define SUB_STEP_NUMBER_X		16
 #define MAX_DELAY_X				1000	// In microsecond
 
@@ -25,7 +25,7 @@
 #define MAX_POSITION_Y			7000	// In mm
 #define MAX_SPEED_Y				180	// TODO: update this value to be representative
 #define MM_PER_STEP_Y			127         //0.127
-#define HOMING_DELAY_Y			60
+#define HOMING_DELAY_Y			80	// Higher is slower
 #define SUB_STEP_NUMBER_Y		16
 #define MAX_DELAY_Y				1000	// In microsecond
 
@@ -66,5 +66,4 @@
 
 
 #define UNDEFINED	0
-
 bool commandReceivedFlag = 0;

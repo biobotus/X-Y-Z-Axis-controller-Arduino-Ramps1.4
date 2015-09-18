@@ -48,11 +48,11 @@ int val = 0;
 int j = 0;
 
 // Initializing motors
-Motor Motor_X(PIN_STEP_X, PIN_DIR_X, PIN_ENABLE_X, PIN_LMSWITCH_X, MAX_POSITION_X, MM_PER_STEP_X, SUB_STEP_NUMBER_X, false, MAX_SPEED_X, HOMING_DELAY_X);
-Motor Motor_Y(PIN_STEP_Y, PIN_DIR_Y, PIN_ENABLE_Y, PIN_LMSWITCH_Y, MAX_POSITION_Y, MM_PER_STEP_Y, SUB_STEP_NUMBER_Y, true, MAX_SPEED_Y, HOMING_DELAY_Y);
-Motor Motor_Z1(PIN_STEP_Z1, PIN_DIR_Z1, PIN_ENABLE_Z1, PIN_LMSWITCH_Z1, MAX_POSITION_Z1, MM_PER_STEP_Z1, SUB_STEP_NUMBER_Z1, true, MAX_SPEED_Z1, HOMING_DELAY_Z1);
-Motor Motor_Z2(PIN_STEP_Z2, PIN_DIR_Z2, PIN_ENABLE_Z2, PIN_LMSWITCH_Z2, MAX_POSITION_Z2, MM_PER_STEP_Z2, SUB_STEP_NUMBER_Z2, true, MAX_SPEED_Z2, HOMING_DELAY_Z2);
-Motor Motor_Z3(PIN_STEP_Z3, PIN_DIR_Z3, PIN_ENABLE_Z3, PIN_LMSWITCH_Z3, MAX_POSITION_Z3, MM_PER_STEP_Z3, SUB_STEP_NUMBER_Z3, true, MAX_SPEED_Z3, HOMING_DELAY_Z3);
+Motor Motor_X(PIN_STEP_X, PIN_DIR_X, PIN_ENABLE_X, PIN_LMSWITCH_X, MAX_POSITION_X, MM_PER_STEP_X, SUB_STEP_NUMBER_X, MAX_SPEED_X, HOMING_DELAY_X, false);
+Motor Motor_Y(PIN_STEP_Y, PIN_DIR_Y, PIN_ENABLE_Y, PIN_LMSWITCH_Y, MAX_POSITION_Y, MM_PER_STEP_Y, SUB_STEP_NUMBER_Y, MAX_SPEED_Y, HOMING_DELAY_Y, true);
+Motor Motor_Z1(PIN_STEP_Z1, PIN_DIR_Z1, PIN_ENABLE_Z1, PIN_LMSWITCH_Z1, MAX_POSITION_Z1, MM_PER_STEP_Z1, SUB_STEP_NUMBER_Z1, MAX_SPEED_Z1, HOMING_DELAY_Z1, true);
+Motor Motor_Z2(PIN_STEP_Z2, PIN_DIR_Z2, PIN_ENABLE_Z2, PIN_LMSWITCH_Z2, MAX_POSITION_Z2, MM_PER_STEP_Z2, SUB_STEP_NUMBER_Z2, MAX_SPEED_Z2, HOMING_DELAY_Z2, true);
+Motor Motor_Z3(PIN_STEP_Z3, PIN_DIR_Z3, PIN_ENABLE_Z3, PIN_LMSWITCH_Z3, MAX_POSITION_Z3, MM_PER_STEP_Z3, SUB_STEP_NUMBER_Z3, MAX_SPEED_Z3, HOMING_DELAY_Z3, true);
 
 /*Motor Motor_X = { 0, 0, 0, 0, HOMING_SPEED_X, PIN_STEP_X, PIN_DIR_X, PIN_ENABLE_X, PIN_LMSWITCH_X, 0, MAX_POSITION_X, MM_PER_STEP_X, SUB_STEP_NUMBER_X, LOW, HIGH, MAX_DELAY_X, MAX_RAMP_X, CRUISE_SPEED_DELAY_X };
 Motor Motor_Y = { 0,0,0,0,HOMING_SPEED_Y,PIN_STEP_Y,PIN_DIR_Y,PIN_ENABLE_Y,PIN_LMSWITCH_Y,0,MAX_POSITION_Y,MM_PER_STEP_Y,SUB_STEP_NUMBER_Y,LOW, HIGH,MAX_DELAY_Y,MAX_RAMP_Y,CRUISE_SPEED_DELAY_Y};
@@ -169,14 +169,14 @@ void loop()
 		case 'X':
 		{
 			String temp = strValue.substring(strValue.indexOf('X') + 1);
-			Motor_X.setDesiredPositionSubsteps(temp);
+			//Motor_X.setDesiredPositionSubsteps(temp);
 
 			//moveMotorX(&Motor_X, 150);
 			//moveMotorWithKindOfTrajectory(&Motor_X);
 			//moveMotorTrapezoidally(&Motor_X);
 			//Motor_X.moveMotorWithKindOfTrajectory();
 			//Motor_X.moveTo(temp, UNDEFINED);
-			Motor_X.testMaxSpeed(temp, 10, 60);
+			Motor_X.testMaxSpeed(temp, 1, 180);
 			break;
 		}
 		case 'Y':
@@ -229,63 +229,71 @@ void loop()
 			homing_all_5_axis();
 			break;
 		}
-		case 'B': // Stands for a sequence :s
+		case 'D': // Stands for a sequence :s
 		{
-			String temp = "8000"; // Send robot to 95cm from home on the X axis.
+			String temp = "2500"; // Send robot to 95cm from home on the X axis.
 			Motor_X.setDesiredPositionSubsteps(temp);
-			moveMotorX(&Motor_X, 160);
+			Motor_X.moveToWithTriangularSpeedProfile();
 
-			temp = "3000"; // Send robot to 40cm from home on the Y axis.
+			delayMicroseconds(1000);
+
+			temp = "1700"; // Send robot to 40cm from home on the Y axis.
 			Motor_Y.setDesiredPositionSubsteps(temp);
-			Motor_Y.moveMotor();
+			Motor_Y.moveToWithTriangularSpeedProfile();
 
-			temp = "2430"; // Send robot to 95cm from home on the X axis.
-			Motor_Z2.setDesiredPositionSubsteps(temp);
-			Motor_Z2.moveMotor();
+			delayMicroseconds(1000);
 
-			/*temp = "1500"; // Send robot to 40cm from home on each of the Z axis.
-			Motor_Z1.setDesiredPositionSubsteps(temp);
-			moveMotor(&Motor_Z1);
-			Motor_Z2.setDesiredPositionSubsteps(temp);
-			moveMotor(&Motor_Z2);
+			temp = "2170"; // Send robot to 95cm from home on the X axis.
 			Motor_Z3.setDesiredPositionSubsteps(temp);
-			moveMotor(&Motor_Z3);*/
+			Motor_Z3.moveToWithTriangularSpeedProfile();
 
-			//homing_all_5_axis();
-			break;
-		}
-		case 'A':
-		{
-			String temp = "3000"; // Send robot to 95cm from home on the X axis.
+			delayMicroseconds(1000);
+
+			temp = "2915"; // Send robot to 95cm from home on the X axis.
 			Motor_X.setDesiredPositionSubsteps(temp);
 			Motor_X.moveToWithTriangularSpeedProfile();
 
-			temp = "3500"; // Send robot to 40cm from home on the Y axis.
-			Motor_Y.setDesiredPositionSubsteps(temp);
-			Motor_Y.moveToWithTriangularSpeedProfile();
+			delayMicroseconds(2000);
+
+			//temp = "100"; // Send robot to 95cm from home on the X axis.
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			//Motor_Z3.moveToWithTriangularSpeedProfile();
 			
-
-			temp = "3500"; // Send robot to 40cm from home on the Y axis.
-			Motor_Z2.setDesiredPositionSubsteps(temp);
-			Motor_Z2.moveToWithTriangularSpeedProfile();
-			
-			delay(10000);
-
-
-			temp = "8000"; // Send robot to 95cm from home on the X axis.
-			Motor_X.setDesiredPositionSubsteps(temp);
-			Motor_X.moveToWithTriangularSpeedProfile();
-
-			temp = "3000"; // Send robot to 40cm from home on the Y axis.
-			Motor_Y.setDesiredPositionSubsteps(temp);
-			Motor_Y.moveToWithTriangularSpeedProfile();
-
-			temp = "2430"; // Send robot to 95cm from home on the X axis.
-			Motor_Z2.setDesiredPositionSubsteps(temp);
-			Motor_Z2.moveToWithTriangularSpeedProfile();
-
+			homing_all_5_axis();
 			break;
 		}
+		//case 'A':
+		//{
+		//	String temp = "3000"; // Send robot to 95cm from home on the X axis.
+		//	Motor_X.setDesiredPositionSubsteps(temp);
+		//	Motor_X.moveToWithTriangularSpeedProfile();
+
+		//	temp = "3500"; // Send robot to 40cm from home on the Y axis.
+		//	Motor_Y.setDesiredPositionSubsteps(temp);
+		//	Motor_Y.moveToWithTriangularSpeedProfile();
+		//	
+
+		//	temp = "3500"; // Send robot to 40cm from home on the Y axis.
+		//	Motor_Z2.setDesiredPositionSubsteps(temp);
+		//	Motor_Z2.moveToWithTriangularSpeedProfile();
+		//	
+		//	delay(10000);
+
+
+		//	temp = "8000"; // Send robot to 95cm from home on the X axis.
+		//	Motor_X.setDesiredPositionSubsteps(temp);
+		//	Motor_X.moveToWithTriangularSpeedProfile();
+
+		//	temp = "3000"; // Send robot to 40cm from home on the Y axis.
+		//	Motor_Y.setDesiredPositionSubsteps(temp);
+		//	Motor_Y.moveToWithTriangularSpeedProfile();
+
+		//	temp = "2430"; // Send robot to 95cm from home on the X axis.
+		//	Motor_Z2.setDesiredPositionSubsteps(temp);
+		//	Motor_Z2.moveToWithTriangularSpeedProfile();
+
+		//	break;
+		//}
 		default:
 			break;
 		}
