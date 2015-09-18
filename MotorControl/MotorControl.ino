@@ -48,11 +48,11 @@ int val = 0;
 int j = 0;
 
 // Initializing motors
-Motor Motor_X(PIN_STEP_X, PIN_DIR_X, PIN_ENABLE_X, PIN_LMSWITCH_X, MAX_POSITION_X, MM_PER_STEP_X, SUB_STEP_NUMBER_X, false, MAX_SPEED_X);
-Motor Motor_Y(PIN_STEP_Y, PIN_DIR_Y, PIN_ENABLE_Y, PIN_LMSWITCH_Y, MAX_POSITION_Y, MM_PER_STEP_Y, SUB_STEP_NUMBER_Y, false, MAX_SPEED_Y);
-Motor Motor_Z1(PIN_STEP_Z1, PIN_DIR_Z1, PIN_ENABLE_Z1, PIN_LMSWITCH_Z1, MAX_POSITION_Z1, MM_PER_STEP_Z1, SUB_STEP_NUMBER_Z1, true, MAX_SPEED_Z1);
-Motor Motor_Z2(PIN_STEP_Z2, PIN_DIR_Z2, PIN_ENABLE_Z2, PIN_LMSWITCH_Z2, MAX_POSITION_Z2, MM_PER_STEP_Z2, SUB_STEP_NUMBER_Z2, true, MAX_SPEED_Z2);
-Motor Motor_Z3(PIN_STEP_Z3, PIN_DIR_Z3, PIN_ENABLE_Z3, PIN_LMSWITCH_Z3, MAX_POSITION_Z3, MM_PER_STEP_Z3, SUB_STEP_NUMBER_Z3, true, MAX_SPEED_Z3);
+Motor Motor_X(PIN_STEP_X, PIN_DIR_X, PIN_ENABLE_X, PIN_LMSWITCH_X, MAX_POSITION_X, MM_PER_STEP_X, SUB_STEP_NUMBER_X, false, MAX_SPEED_X, HOMING_DELAY_X);
+Motor Motor_Y(PIN_STEP_Y, PIN_DIR_Y, PIN_ENABLE_Y, PIN_LMSWITCH_Y, MAX_POSITION_Y, MM_PER_STEP_Y, SUB_STEP_NUMBER_Y, true, MAX_SPEED_Y, HOMING_DELAY_Y);
+Motor Motor_Z1(PIN_STEP_Z1, PIN_DIR_Z1, PIN_ENABLE_Z1, PIN_LMSWITCH_Z1, MAX_POSITION_Z1, MM_PER_STEP_Z1, SUB_STEP_NUMBER_Z1, true, MAX_SPEED_Z1, HOMING_DELAY_Z1);
+Motor Motor_Z2(PIN_STEP_Z2, PIN_DIR_Z2, PIN_ENABLE_Z2, PIN_LMSWITCH_Z2, MAX_POSITION_Z2, MM_PER_STEP_Z2, SUB_STEP_NUMBER_Z2, true, MAX_SPEED_Z2, HOMING_DELAY_Z2);
+Motor Motor_Z3(PIN_STEP_Z3, PIN_DIR_Z3, PIN_ENABLE_Z3, PIN_LMSWITCH_Z3, MAX_POSITION_Z3, MM_PER_STEP_Z3, SUB_STEP_NUMBER_Z3, true, MAX_SPEED_Z3, HOMING_DELAY_Z3);
 
 /*Motor Motor_X = { 0, 0, 0, 0, HOMING_SPEED_X, PIN_STEP_X, PIN_DIR_X, PIN_ENABLE_X, PIN_LMSWITCH_X, 0, MAX_POSITION_X, MM_PER_STEP_X, SUB_STEP_NUMBER_X, LOW, HIGH, MAX_DELAY_X, MAX_RAMP_X, CRUISE_SPEED_DELAY_X };
 Motor Motor_Y = { 0,0,0,0,HOMING_SPEED_Y,PIN_STEP_Y,PIN_DIR_Y,PIN_ENABLE_Y,PIN_LMSWITCH_Y,0,MAX_POSITION_Y,MM_PER_STEP_Y,SUB_STEP_NUMBER_Y,LOW, HIGH,MAX_DELAY_Y,MAX_RAMP_Y,CRUISE_SPEED_DELAY_Y};
@@ -99,101 +99,24 @@ void setup() {
 	pinMode(PIN_LMSWITCH_Z3, INPUT);
 	// Reserving space for string
 	strValue.reserve(128);
+
+	// Disables all motor for now:
+	Motor_X.stop();
+	Motor_Y.stop();
+	Motor_Z1.stop();
+	Motor_Z2.stop();
+	Motor_Z3.stop();
 }
 
 void homing_all_5_axis() {
 
-	while (digitalRead(PIN_LMSWITCH_Z1))
-	{
-		digitalWrite(PIN_ENABLE_Z1, LOW);// enable
-		digitalWrite(PIN_DIR_Z1, HIGH);  // Goes Up
-		digitalWrite(PIN_STEP_Z1, HIGH);
-		delayMicroseconds(2);
-		digitalWrite(PIN_STEP_Z1, LOW);
-		delayMicroseconds(Homing_Speed_Z1);
-	}
-	digitalWrite(PIN_ENABLE_Z1, HIGH);// disable
-	Motor_Z1._currentPositionSubsteps = 0;
-	position_Z1 = 0;
+	Motor_Z2.goHome();
 
-	while (digitalRead(PIN_LMSWITCH_Z2))
-	{
-		digitalWrite(PIN_ENABLE_Z2, LOW);// enable
-		digitalWrite(PIN_DIR_Z2, HIGH);  // Goes Up
-		digitalWrite(PIN_STEP_Z2, HIGH);
-		delayMicroseconds(2);
-		digitalWrite(PIN_STEP_Z2, LOW);
-		delayMicroseconds(Homing_Speed_Z2);
-	}
-	digitalWrite(PIN_ENABLE_Z2, HIGH);// disable
-	Motor_Z2._currentPositionSubsteps = 0;
-	position_Z2 = 0;
-
-	while (digitalRead(PIN_LMSWITCH_Z3))
-	{
-		digitalWrite(PIN_ENABLE_Z3, LOW);// enable
-		digitalWrite(PIN_DIR_Z3, HIGH);  // Goes Up
-		digitalWrite(PIN_STEP_Z3, HIGH);
-		delayMicroseconds(2);
-		digitalWrite(PIN_STEP_Z3, LOW);
-		delayMicroseconds(Homing_Speed_Z3);
-	}
-	digitalWrite(PIN_ENABLE_Z3, HIGH);// disable
-	Motor_Z3._currentPositionSubsteps = 0;
-	position_Z3 = 0;
+	Motor_Z3.goHome();
 
 	Motor_X.goHome();
 
-	/*while (digitalRead(PIN_LMSWITCH_X))
-	{
-		digitalWrite(PIN_ENABLE_X, LOW);// enable
-		digitalWrite(PIN_DIR_X, LOW);  // Towards home direction
-		digitalWrite(PIN_STEP_X, HIGH);
-		delayMicroseconds(2);
-		digitalWrite(PIN_STEP_X, LOW);
-		delayMicroseconds(Homing_Speed_X1);
-	}
-	for (int i = 0; i < 3000; i++)
-	{
-		digitalWrite(PIN_ENABLE_X, LOW);// enable
-		digitalWrite(PIN_DIR_X, HIGH);  // Away from home direction
-		digitalWrite(PIN_STEP_X, HIGH);
-		delayMicroseconds(2);
-		digitalWrite(PIN_STEP_X, LOW);
-		delayMicroseconds(2*Homing_Speed_X1);
-	}
-	while (digitalRead(PIN_LMSWITCH_X))
-	{
-		digitalWrite(PIN_ENABLE_X, LOW);// enable
-		digitalWrite(PIN_DIR_X, LOW);  // Towards home direction
-		digitalWrite(PIN_STEP_X, HIGH);
-		delayMicroseconds(2);
-		digitalWrite(PIN_STEP_X, LOW);
-		delayMicroseconds(2*Homing_Speed_X1);
-	}*/
-	
-
-	digitalWrite(PIN_ENABLE_X, HIGH);// disable
-	Motor_X._currentPositionSubsteps = 0;
-	position_X1 = 0;
-
-	while (digitalRead(PIN_LMSWITCH_Y))
-	{
-		digitalWrite(PIN_ENABLE_Y, LOW);// enable
-		digitalWrite(PIN_DIR_Y, LOW);  // Other direction
-		digitalWrite(PIN_STEP_Y, HIGH);
-		delayMicroseconds(2);
-		digitalWrite(PIN_STEP_Y, LOW);
-		delayMicroseconds(Homing_Speed_Y1);
-	}
-	digitalWrite(PIN_ENABLE_Y, HIGH);// disable
-	Motor_Y._currentPositionSubsteps = 0;
-	position_Y1 = 0;
-}
-
-void disableAllMotors(void)
-{
-
+	Motor_Y.goHome();
 }
 
 int moveMotorX(Motor* motorToMove, int delay)
@@ -210,7 +133,7 @@ int moveMotorX(Motor* motorToMove, int delay)
 	digitalWrite(motorToMove->_pinEnable, LOW);// enable
 	digitalWrite(motorToMove->_pinDir, movementDirection);  // Set direction
 
-	while (motorToMove->_currentPositionSubsteps != motorToMove->_desiredPositionSubsteps && motorToMove->_currentPositionSubsteps < motorToMove->_maxPositionSubsteps)
+	while (motorToMove->_currentPositionSubsteps != motorToMove->_desiredPositionSubsteps)
 	{
 		digitalWrite(motorToMove->_pinStep, HIGH);
 		delayMicroseconds(20);
@@ -233,80 +156,6 @@ int moveMotorX(Motor* motorToMove, int delay)
 }
 
 
-/*int moveMotorWithKindOfTrajectory(Motor* motorToMove)
-{
-	int movementDirection = ((motorToMove->_desiredPositionSubsteps - motorToMove->_currentPositionSubsteps) > 0 ? motorToMove->_leavingHomePinState : motorToMove->_towardHomePinState);
-	
-	long stepCounter = 0;	// Will hold the step count to know when to change delay to affect speed accordingly
-	long stepsToTravel = abs(motorToMove->_desiredPositionSubsteps - motorToMove->_currentPositionSubsteps);
-	int initialDelay = 30;
-	int maxSpeedDelay = 2;	// Smaller is faster
-	long diff = initialDelay - maxSpeedDelay;
-	long divider = (long)stepsToTravel / 2;
-	//long increment = (long)(((100000*diff) / divider));
-	float increment = (100000 * diff) / divider;
-
-	//long increment = long(100000*((initialDelay - maxSpeedDelay) / (stepsToTravel/2)));
-	bool firstHalf = true;
-	bool plateau = false;
-	bool decelerationPhase = false;
-
-	Serial.print("Steps to travel: ");
-	Serial.println(stepsToTravel);
-	Serial.print("Diff: ");
-	Serial.println(diff);
-	Serial.print("Divider: ");
-	Serial.println(divider);
-	Serial.print("Increment: ");
-	Serial.println(increment);
-	Serial.println("Current position : ");
-	Serial.print(motorToMove->_currentPositionSubsteps);
-	Serial.println("Desired position : ");
-	Serial.print(motorToMove->_desiredPositionSubsteps);
-	Serial.println();
-
-	motorToMove->_lastPositionSubsteps = motorToMove->_currentPositionSubsteps;
-	digitalWrite(motorToMove->_pinEnable, LOW);// enable
-	digitalWrite(motorToMove->_pinDir, movementDirection);  // Set direction
-
-	while (motorToMove->_currentPositionSubsteps != motorToMove->_desiredPositionSubsteps && motorToMove->_currentPositionSubsteps < motorToMove->_maxPositionSubsteps)
-	{
-		digitalWrite(motorToMove->_pinStep, HIGH);
-		delayMicroseconds(4);
-		digitalWrite(motorToMove->_pinStep, LOW);
-
-		// Calculating delay according to required speed (really approximate and pretty hardcoded method)
-		if (firstHalf == true)//stepCounter <= stepsToTravel / 2)
-		{
-			int delayToSend = int(initialDelay - ((increment / 100000)*stepCounter));
-			delayMicroseconds(delayToSend);
-
-			// Verify if we have passed halfway
-			if (stepCounter >= (stepsToTravel / 2))
-			{
-				stepCounter = 0;
-				firstHalf = false;
-			}
-		}
-		else
-		{
-			delayMicroseconds(int(maxSpeedDelay + increment/100000*stepCounter));
-		}
-
-		if (movementDirection == motorToMove->_leavingHomePinState)
-		{
-			motorToMove->_currentPositionSubsteps += 1;
-		}
-		else
-		{
-			motorToMove->_currentPositionSubsteps = motorToMove->_currentPositionSubsteps - 1;
-		}
-		stepCounter += 1;
-	}
-	digitalWrite(motorToMove->_pinEnable, HIGH);// disable
-	return 1;
-}*/
-
 void loop()
 {
 	if (commandReceivedFlag == 1)
@@ -325,9 +174,9 @@ void loop()
 			//moveMotorX(&Motor_X, 150);
 			//moveMotorWithKindOfTrajectory(&Motor_X);
 			//moveMotorTrapezoidally(&Motor_X);
-			Motor_X.moveMotorWithKindOfTrajectory();
+			//Motor_X.moveMotorWithKindOfTrajectory();
 			//Motor_X.moveTo(temp, UNDEFINED);
-			//Motor_X.testMaxSpeed(temp, 60);
+			Motor_X.testMaxSpeed(temp, 10, 60);
 			break;
 		}
 		case 'Y':
@@ -335,7 +184,7 @@ void loop()
 			String temp = strValue.substring(strValue.indexOf('Y') + 1);
 			Motor_Y.setDesiredPositionSubsteps(temp);
 			
-			Motor_Y.moveMotorWithKindOfTrajectory();
+			Motor_Y.moveToWithTriangularSpeedProfile();
 			//moveMotor(&Motor_Y);
 			//moveMotorWithKindOfTrajectory(&Motor_Y);
 
@@ -348,12 +197,14 @@ void loop()
 			if (zAxisNumber == '1')
 			{
 				String temp = strValue.substring(strValue.indexOf('1') + 1);
+				Serial.println("Extracted demand: ");	// TODO: remove this line
+				Serial.println(temp);	// TODO: Remove this line
 				Motor_Z1.setDesiredPositionSubsteps(temp);
 				//moveMotor(&Motor_Z1);
 				//moveMotorWithKindOfTrajectory(&Motor_Z1);
 				//moveMotorWithKindOfTrajectory(&Motor_Z1);
 
-				Motor_Z1.moveMotorWithKindOfTrajectory();
+				Motor_Z1.moveToWithTriangularSpeedProfile();
 			}
 			else if (zAxisNumber == '2')
 			{
@@ -361,7 +212,7 @@ void loop()
 				Motor_Z2.setDesiredPositionSubsteps(temp);
 				//moveMotor(&Motor_Z2);
 				//moveMotorWithKindOfTrajectory(&Motor_Z2);
-				Motor_Z2.moveMotorWithKindOfTrajectory();
+				Motor_Z2.moveToWithTriangularSpeedProfile();
 			}
 			else if (zAxisNumber == '3')
 			{
@@ -369,7 +220,7 @@ void loop()
 				Motor_Z3.setDesiredPositionSubsteps(temp);
 				//moveMotor(&Motor_Z3);
 				//moveMotorWithKindOfTrajectory(&Motor_Z3);
-				Motor_Z3.moveMotorWithKindOfTrajectory();
+				Motor_Z3.moveToWithTriangularSpeedProfile();
 			}
 			break;
 		}
@@ -407,31 +258,31 @@ void loop()
 		{
 			String temp = "3000"; // Send robot to 95cm from home on the X axis.
 			Motor_X.setDesiredPositionSubsteps(temp);
-			Motor_X.moveMotorWithKindOfTrajectory();
+			Motor_X.moveToWithTriangularSpeedProfile();
 
 			temp = "3500"; // Send robot to 40cm from home on the Y axis.
 			Motor_Y.setDesiredPositionSubsteps(temp);
-			Motor_Y.moveMotorWithKindOfTrajectory();
+			Motor_Y.moveToWithTriangularSpeedProfile();
 			
 
 			temp = "3500"; // Send robot to 40cm from home on the Y axis.
 			Motor_Z2.setDesiredPositionSubsteps(temp);
-			Motor_Z2.moveMotorWithKindOfTrajectory();
+			Motor_Z2.moveToWithTriangularSpeedProfile();
 			
 			delay(10000);
 
 
 			temp = "8000"; // Send robot to 95cm from home on the X axis.
 			Motor_X.setDesiredPositionSubsteps(temp);
-			Motor_X.moveMotorWithKindOfTrajectory();
+			Motor_X.moveToWithTriangularSpeedProfile();
 
 			temp = "3000"; // Send robot to 40cm from home on the Y axis.
 			Motor_Y.setDesiredPositionSubsteps(temp);
-			Motor_Y.moveMotorWithKindOfTrajectory();
+			Motor_Y.moveToWithTriangularSpeedProfile();
 
 			temp = "2430"; // Send robot to 95cm from home on the X axis.
 			Motor_Z2.setDesiredPositionSubsteps(temp);
-			Motor_Z2.moveMotorWithKindOfTrajectory();
+			Motor_Z2.moveToWithTriangularSpeedProfile();
 
 			break;
 		}
