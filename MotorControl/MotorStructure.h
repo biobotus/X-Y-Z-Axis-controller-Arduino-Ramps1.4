@@ -40,13 +40,9 @@ public:
 
 	void setMaxPositionSubsteps(String maximum);
 
-	void moveToWithTriangularSpeedProfile(void);
-
 	void goHome(void);
 
 	int moveMotor(void);
-
-	int moveMotorTrapeizodally(void);
 
 	int moveMotorTrapezoidally(void);
 
@@ -54,7 +50,11 @@ public:
 
 	void stop(void);
 
-	void testMaxSpeed(String desiredPosition, int delayVariation, int cruiseSpeed); // delayVariation in microseconds per microstep, cruiseSpeed in mm/s
+	void moveToWithTriangularSpeedProfile(String desiredPosition);
+
+	void xAxisMoveWithTriangularSpeed(String desiredPosition);
+
+	void moveTrapezoidally(String desiredPosition, float delayVariation, int cruiseSpeed); // delayVariation in microseconds per microstep, cruiseSpeed in mm/s
 
 	void moveTo(String desiredPosition, unsigned int speed);	// position in mm*10 --> for a 23.4mm movement, input 234, speed in mm/s directly (integer only)
 	

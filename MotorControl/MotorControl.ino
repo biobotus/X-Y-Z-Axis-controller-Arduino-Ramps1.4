@@ -50,7 +50,7 @@ int j = 0;
 // Initializing motors
 Motor Motor_X(PIN_STEP_X, PIN_DIR_X, PIN_ENABLE_X, PIN_LMSWITCH_X, MAX_POSITION_X, MM_PER_STEP_X, SUB_STEP_NUMBER_X, MAX_SPEED_X, HOMING_DELAY_X, false);
 Motor Motor_Y(PIN_STEP_Y, PIN_DIR_Y, PIN_ENABLE_Y, PIN_LMSWITCH_Y, MAX_POSITION_Y, MM_PER_STEP_Y, SUB_STEP_NUMBER_Y, MAX_SPEED_Y, HOMING_DELAY_Y, true);
-Motor Motor_Z1(PIN_STEP_Z1, PIN_DIR_Z1, PIN_ENABLE_Z1, PIN_LMSWITCH_Z1, MAX_POSITION_Z1, MM_PER_STEP_Z1, SUB_STEP_NUMBER_Z1, MAX_SPEED_Z1, HOMING_DELAY_Z1, true);
+Motor Motor_Z1(PIN_STEP_Z1, PIN_DIR_Z1, PIN_ENABLE_Z1, PIN_LMSWITCH_Z1, MAX_POSITION_Z1, MM_PER_STEP_Z1, SUB_STEP_NUMBER_Z1, MAX_SPEED_Z1, HOMING_DELAY_Z1, false);
 Motor Motor_Z2(PIN_STEP_Z2, PIN_DIR_Z2, PIN_ENABLE_Z2, PIN_LMSWITCH_Z2, MAX_POSITION_Z2, MM_PER_STEP_Z2, SUB_STEP_NUMBER_Z2, MAX_SPEED_Z2, HOMING_DELAY_Z2, true);
 Motor Motor_Z3(PIN_STEP_Z3, PIN_DIR_Z3, PIN_ENABLE_Z3, PIN_LMSWITCH_Z3, MAX_POSITION_Z3, MM_PER_STEP_Z3, SUB_STEP_NUMBER_Z3, MAX_SPEED_Z3, HOMING_DELAY_Z3, true);
 
@@ -64,11 +64,11 @@ Motor Motor_Z3 = { 0,0,0,0,HOMING_SPEED_Z3,PIN_STEP_Z3,PIN_DIR_Z3,PIN_ENABLE_Z3,
 void setup() {
 
 	// Initializing motor maximum positions in substeps
-	Motor_X.setMaxPositionSubsteps((String)MAX_POSITION_X);
-	Motor_Y.setMaxPositionSubsteps((String)MAX_POSITION_Y);
-	Motor_Z1.setMaxPositionSubsteps((String)MAX_POSITION_Z1);
-	Motor_Z2.setMaxPositionSubsteps((String)MAX_POSITION_Z2);
-	Motor_Z3.setMaxPositionSubsteps((String)MAX_POSITION_Z3);
+	//Motor_X.setMaxPositionSubsteps((String)MAX_POSITION_X);
+	//Motor_Y.setMaxPositionSubsteps((String)MAX_POSITION_Y);
+	//Motor_Z1.setMaxPositionSubsteps((String)MAX_POSITION_Z1);
+	//Motor_Z2.setMaxPositionSubsteps((String)MAX_POSITION_Z2);
+	//Motor_Z3.setMaxPositionSubsteps((String)MAX_POSITION_Z3);
 
 	//Stepper(200,Step_X1,Dir_X1);
 	Serial.begin(BAUD_RATE);	
@@ -110,7 +110,9 @@ void setup() {
 
 void homing_all_5_axis() {
 
-	Motor_Z2.goHome();
+	Motor_Z1.goHome();
+
+	//Motor_Z2.goHome();
 
 	Motor_Z3.goHome();
 
@@ -171,20 +173,29 @@ void loop()
 			String temp = strValue.substring(strValue.indexOf('X') + 1);
 			//Motor_X.setDesiredPositionSubsteps(temp);
 
+			Serial.print("Going to X: ");
+			Serial.println(temp);
+
 			//moveMotorX(&Motor_X, 150);
 			//moveMotorWithKindOfTrajectory(&Motor_X);
 			//moveMotorTrapezoidally(&Motor_X);
-			//Motor_X.moveMotorWithKindOfTrajectory();
+			
 			//Motor_X.moveTo(temp, UNDEFINED);
-			Motor_X.testMaxSpeed(temp, 1, 180);
+			//Motor_X.moveTrapezoidally(temp, 1, 180);
+
+			//Motor_X.moveToWithTriangularSpeedProfile(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
 			break;
 		}
 		case 'Y':
 		{
 			String temp = strValue.substring(strValue.indexOf('Y') + 1);
 			Motor_Y.setDesiredPositionSubsteps(temp);
+			Serial.print("Going to Y: ");
+			Serial.println(temp);
 			
-			Motor_Y.moveToWithTriangularSpeedProfile();
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
 			//moveMotor(&Motor_Y);
 			//moveMotorWithKindOfTrajectory(&Motor_Y);
 
@@ -197,30 +208,34 @@ void loop()
 			if (zAxisNumber == '1')
 			{
 				String temp = strValue.substring(strValue.indexOf('1') + 1);
-				Serial.println("Extracted demand: ");	// TODO: remove this line
-				Serial.println(temp);	// TODO: Remove this line
-				Motor_Z1.setDesiredPositionSubsteps(temp);
+				Serial.print("Going to Z1: ");
+				Serial.println(temp);
+				//Motor_Z1.setDesiredPositionSubsteps(temp);
 				//moveMotor(&Motor_Z1);
 				//moveMotorWithKindOfTrajectory(&Motor_Z1);
 				//moveMotorWithKindOfTrajectory(&Motor_Z1);
 
-				Motor_Z1.moveToWithTriangularSpeedProfile();
+				Motor_Z1.moveToWithTriangularSpeedProfile(temp);
 			}
 			else if (zAxisNumber == '2')
 			{
 				String temp = strValue.substring(strValue.indexOf('2') + 1);
-				Motor_Z2.setDesiredPositionSubsteps(temp);
+				//Motor_Z2.setDesiredPositionSubsteps(temp);
+				Serial.print("Going to Z2: ");
+				Serial.println(temp);
 				//moveMotor(&Motor_Z2);
 				//moveMotorWithKindOfTrajectory(&Motor_Z2);
-				Motor_Z2.moveToWithTriangularSpeedProfile();
+				Motor_Z2.moveToWithTriangularSpeedProfile(temp);
 			}
 			else if (zAxisNumber == '3')
 			{
 				String temp = strValue.substring(strValue.indexOf('3') + 1);
-				Motor_Z3.setDesiredPositionSubsteps(temp);
+				//Motor_Z3.setDesiredPositionSubsteps(temp);
+				Serial.print("Going to Z3: ");
+				Serial.println(temp);
 				//moveMotor(&Motor_Z3);
 				//moveMotorWithKindOfTrajectory(&Motor_Z3);
-				Motor_Z3.moveToWithTriangularSpeedProfile();
+				Motor_Z3.moveToWithTriangularSpeedProfile(temp);
 			}
 			break;
 		}
@@ -229,31 +244,581 @@ void loop()
 			homing_all_5_axis();
 			break;
 		}
-		case 'D': // Stands for a sequence :s
+		case 'M':	// Picking up pipettes (multi), going pick liquid and diluting in 96 well plates
 		{
-			String temp = "2500"; // Send robot to 95cm from home on the X axis.
-			Motor_X.setDesiredPositionSubsteps(temp);
-			Motor_X.moveToWithTriangularSpeedProfile();
+			
+			homing_all_5_axis();
+			String temp;
+			//****************************************
+			// Going pick up pipettes tips
+			temp = "3035"; 
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
 
-			delayMicroseconds(1000);
+			temp = "6270";
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
 
-			temp = "1700"; // Send robot to 40cm from home on the Y axis.
-			Motor_Y.setDesiredPositionSubsteps(temp);
-			Motor_Y.moveToWithTriangularSpeedProfile();
+			temp = "3690";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(1000);
 
-			delayMicroseconds(1000);
+			temp = "2500";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
 
-			temp = "2170"; // Send robot to 95cm from home on the X axis.
-			Motor_Z3.setDesiredPositionSubsteps(temp);
-			Motor_Z3.moveToWithTriangularSpeedProfile();
+			//****************************************
+			// Liquid bucket
+			temp = "300";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
 
-			delayMicroseconds(1000);
+			temp = "4500";	// TODO: modify
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
 
-			temp = "2915"; // Send robot to 95cm from home on the X axis.
-			Motor_X.setDesiredPositionSubsteps(temp);
-			Motor_X.moveToWithTriangularSpeedProfile();
+			temp = "3730";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(5000);
 
-			delayMicroseconds(2000);
+			temp = "3000";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 1
+			temp = "1500";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 2
+			temp = "1589";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 3
+			temp = "1678";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 4
+			temp = "1767";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 5
+			temp = "1856";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 6
+			temp = "1945";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 7
+			temp = "2034";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 8
+			temp = "2123";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 9
+			temp = "2212";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 10
+			temp = "2301";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 11
+			temp = "2390";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "3550";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Row 12
+			temp = "2479";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "3700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(6000);
+
+			temp = "1700";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			//****************************************
+			// Going to trash
+			temp = "0";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "1150";	// TODO: modify
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			temp = "2935";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(1000);
+
+			temp = "270";
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+			delay(1000);
+
+			temp = "200";
+			Motor_Z1.moveToWithTriangularSpeedProfile(temp);
+			delay(500);
+
+			homing_all_5_axis();
+
+			break;
+		}
+		case 'I':	// dilution demo
+		{
+			homing_all_5_axis();
+			String temp;
+			//****************************************
+			// Go take pipette 1
+			temp = "1660"; // Send robot to 95cm from home on the X axis.
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "6610";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2885";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "400";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			//****************************************
+			// Go make dilution for demo purposes
+			temp = "4200"; // Send robot to 95cm from home on the X axis.
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			// First hole
+			temp = "4000";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2700";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+			delay(10000);
+
+			temp = "2400";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+			delay(200);
+
+			// Second hole
+			temp = "3600";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+			delay(200);
+
+			temp = "2700";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+			delay(10000);
+
+			temp = "2400";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+			delay(200);
+
+			// Going back to first hole
+			temp = "4000";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2800";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+			delay(10000);
+
+			temp = "2400";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+			delay(200);
+
+			// Third hole
+			temp = "3400";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+			delay(200);
+
+			temp = "2700";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+			delay(10000);
+
+			temp = "2400";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			// Fourth hole
+			temp = "3200";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+			delay(200);
+
+			temp = "2700";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+			delay(10000);
+
+			temp = "2400";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			//****************************************
+			// Go to trash for pipette 1
+			temp = "100";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			temp = "2700"; // Send robot to 95cm from home on the X axis.
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "1700";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2180";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2915";
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "100";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			homing_all_5_axis();
+			break;
+		}
+		case 'D':	// Grabbing and trashing pipettes demo
+		{
+			homing_all_5_axis();
+			delay(1000);
+			String temp = "";
+
+			//****************************************
+			// Go take pipette 1
+			temp = "1660"; // Send robot to 95cm from home on the X axis.
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "6610";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2885";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "100";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			//****************************************
+			// Go to trash for pipette 1
+			temp = "2700"; // Send robot to 95cm from home on the X axis.
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "1700";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2180";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2915";
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "100";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			//****************************************
+			// Go take pipette 2
+			temp = "2860"; // Send robot to 95cm from home on the X axis.
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "6620";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2980";//"2885";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "100";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			//****************************************
+			// Go to trash for pipette 2
+			temp = "2700"; // Send robot to trash X level but keeping a safe area to go down
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "1702";	// Getting to Y position of fork to remove pipette
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2090";	// going down to trash fork Z level
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2955";	// Getting the pipette in the fork
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "100";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			////****************************************
+			// Go take pipette 3
+			temp = "4075"; // Send robot to 95cm from home on the X axis.
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "6630";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "3120";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "100";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			////****************************************
+			// Go to trash for pipette 3
+			temp = "2700"; // Send robot to 95cm from home on the X axis.
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "1705";
+			//Motor_Y.setDesiredPositionSubsteps(temp);
+			Motor_Y.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "2000";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "3020";
+			//Motor_X.setDesiredPositionSubsteps(temp);
+			Motor_X.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
+
+			temp = "100";
+			//Motor_Z3.setDesiredPositionSubsteps(temp);
+			Motor_Z3.moveToWithTriangularSpeedProfile(temp);
+
+			delay(500);
 
 			//temp = "100"; // Send robot to 95cm from home on the X axis.
 			//Motor_Z3.setDesiredPositionSubsteps(temp);

@@ -10,10 +10,10 @@
 #define PIN_DIR_X				55
 #define PIN_ENABLE_X			38
 #define PIN_LMSWITCH_X			3
-#define MAX_POSITION_X			12050		// Maximum position in mm X 10.
+#define MAX_POSITION_X			11000		// Maximum position in mm X 10.
 #define MAX_SPEED_X				180	// TODO: update this value to be representative
 #define MM_PER_STEP_X			127         //0.127 (Saved in micrometers per step to fit nicely on an integer)
-#define HOMING_DELAY_X			80		// microstep speed (delay between substeps)
+#define HOMING_DELAY_X			100		// microstep speed (delay between substeps)
 #define SUB_STEP_NUMBER_X		16
 #define MAX_DELAY_X				1000	// In microsecond
 
@@ -34,7 +34,7 @@
 #define PIN_DIR_Z1				48
 #define PIN_ENABLE_Z1			62
 #define PIN_LMSWITCH_Z1			18
-#define MAX_POSITION_Z1			3700	// in mm*10
+#define MAX_POSITION_Z1			3750	// in mm*10
 #define MAX_SPEED_Z1			100	// TODO: update this value to be representative
 #define MM_PER_STEP_Z1			40         //0.640
 #define HOMING_DELAY_Z1			80
