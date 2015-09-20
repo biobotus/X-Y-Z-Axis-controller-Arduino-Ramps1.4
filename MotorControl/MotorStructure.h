@@ -42,17 +42,15 @@ public:
 
 	void goHome(void);
 
-	int moveMotor(void);
+	float getCurrentPos(void);	// Returns the current position in mm (conversion from microsteps to mm)
 
-	int moveMotorTrapezoidally(void);
+	int moveMotorTrapezoidally(void);	// Not used,  may be deleted when confirmed useless
 
 	void setSpeedAndDelay(unsigned int speed);	// Clamps speed and converts it in mm/s to a delay in microseconds and stores it in the "_cruisingSpeedDelay" variable
 
-	void stop(void);
+	void stop(void);	// shuts off the motor by turning off the enable pin (high level)
 
 	void moveToWithTriangularSpeedProfile(String desiredPosition);
-
-	void xAxisMoveWithTriangularSpeed(String desiredPosition);
 
 	void moveTrapezoidally(String desiredPosition, float delayVariation, int cruiseSpeed); // delayVariation in microseconds per microstep, cruiseSpeed in mm/s
 
