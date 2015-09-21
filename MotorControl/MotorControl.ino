@@ -112,49 +112,13 @@ void homing_all_5_axis() {
 
 	Motor_Z1.goHome();
 
-	//Motor_Z2.goHome();
+	Motor_Z2.goHome();
 
 	Motor_Z3.goHome();
 
 	Motor_X.goHome();
 
 	Motor_Y.goHome();
-}
-
-int moveMotorX(Motor* motorToMove, int delay)
-{
-#ifdef DEBUG_PRINT
-	Serial.println(F("Desired substeps to do : "));
-	Serial.println(motorToMove->desiredPositionSubsteps);
-	Serial.print(F("Current position (in substeps): "));
-	Serial.println(motorToMove->currentPositionSubsteps);
-#endif	
-
-	int movementDirection = ((motorToMove->_desiredPositionSubsteps - motorToMove->_currentPositionSubsteps) > 0 ? motorToMove->_leavingHomePinState : motorToMove->_towardHomePinState);
-	motorToMove->_lastPositionSubsteps = motorToMove->_currentPositionSubsteps;
-	digitalWrite(motorToMove->_pinEnable, LOW);// enable
-	digitalWrite(motorToMove->_pinDir, movementDirection);  // Set direction
-
-	while (motorToMove->_currentPositionSubsteps != motorToMove->_desiredPositionSubsteps)
-	{
-		digitalWrite(motorToMove->_pinStep, HIGH);
-		delayMicroseconds(20);
-		digitalWrite(motorToMove->_pinStep, LOW);
-		//delayMicroseconds(motorToMove->initialHomingSpeed);
-
-		delayMicroseconds(delay);//200);
-
-		if (movementDirection == motorToMove->_leavingHomePinState)
-		{
-			motorToMove->_currentPositionSubsteps += 1;
-		}
-		else
-		{
-			motorToMove->_currentPositionSubsteps = motorToMove->_currentPositionSubsteps - 1;
-		}
-	}
-	digitalWrite(motorToMove->_pinEnable, HIGH);// disable
-	return 1;
 }
 
 
@@ -171,7 +135,6 @@ void loop()
 		case 'X':
 		{
 			String temp = strValue.substring(strValue.indexOf('X') + 1);
-			//Motor_X.setDesiredPositionSubsteps(temp);
 
 			Serial.print("Going to X: ");
 			Serial.println(temp);
@@ -202,14 +165,12 @@ void loop()
 				String temp = strValue.substring(strValue.indexOf('1') + 1);
 				Serial.print("Going to Z1: ");
 				Serial.println(temp);
-				//Motor_Z1.setDesiredPositionSubsteps(temp);
 
 				Motor_Z1.moveToWithTriangularSpeedProfile(temp);
 			}
 			else if (zAxisNumber == '2')
 			{
 				String temp = strValue.substring(strValue.indexOf('2') + 1);
-				//Motor_Z2.setDesiredPositionSubsteps(temp);
 				Serial.print("Going to Z2: ");
 				Serial.println(temp);
 				Motor_Z2.moveToWithTriangularSpeedProfile(temp);
@@ -217,17 +178,51 @@ void loop()
 			else if (zAxisNumber == '3')
 			{
 				String temp = strValue.substring(strValue.indexOf('3') + 1);
-				//Motor_Z3.setDesiredPositionSubsteps(temp);
 				Serial.print("Going to Z3: ");
 				Serial.println(temp);
-				//moveMotorWithKindOfTrajectory(&Motor_Z3);
+
 				Motor_Z3.moveToWithTriangularSpeedProfile(temp);
 			}
 			break;
 		}
-		case 'H':
+		case 'H':	// Homing
 		{
-			homing_all_5_axis();
+			char homeAxis = strValue[1];
+
+			if (homeAxis == 'X')
+			{
+				Serial.println(F("Homing X axis: "));
+				Motor_X.goHome();
+			}
+			else if (homeAxis == 'Y')
+			{
+				Serial.println(F("Homing Y axis: "));
+				Motor_Y.goHome();
+			}
+			else if (homeAxis == 'Z')
+			{
+				char zAxisNumber = strValue[2];
+
+				if (zAxisNumber == '1')
+				{
+					Serial.println(F("Homing Z1 axis: "));
+					Motor_Z1.goHome();
+				}
+				else if (zAxisNumber == '2')
+				{
+					Serial.println(F("Homing Z2 axis: "));
+					Motor_Z2.goHome();
+				}
+				else if (zAxisNumber == '3')
+				{
+					Serial.println(F("Homing Z3 axis: "));
+					Motor_Z3.goHome();
+				}
+			}
+			else
+			{
+				homing_all_5_axis();
+			}
 			break;
 		}
 		case 'M':	// Picking up pipettes (multi), going pick liquid and diluting in 96 well plates
@@ -813,38 +808,6 @@ void loop()
 			homing_all_5_axis();
 			break;
 		}
-		//case 'A':
-		//{
-		//	String temp = "3000"; // Send robot to 95cm from home on the X axis.
-		//	Motor_X.setDesiredPositionSubsteps(temp);
-		//	Motor_X.moveToWithTriangularSpeedProfile();
-
-		//	temp = "3500"; // Send robot to 40cm from home on the Y axis.
-		//	Motor_Y.setDesiredPositionSubsteps(temp);
-		//	Motor_Y.moveToWithTriangularSpeedProfile();
-		//	
-
-		//	temp = "3500"; // Send robot to 40cm from home on the Y axis.
-		//	Motor_Z2.setDesiredPositionSubsteps(temp);
-		//	Motor_Z2.moveToWithTriangularSpeedProfile();
-		//	
-		//	delay(10000);
-
-
-		//	temp = "8000"; // Send robot to 95cm from home on the X axis.
-		//	Motor_X.setDesiredPositionSubsteps(temp);
-		//	Motor_X.moveToWithTriangularSpeedProfile();
-
-		//	temp = "3000"; // Send robot to 40cm from home on the Y axis.
-		//	Motor_Y.setDesiredPositionSubsteps(temp);
-		//	Motor_Y.moveToWithTriangularSpeedProfile();
-
-		//	temp = "2430"; // Send robot to 95cm from home on the X axis.
-		//	Motor_Z2.setDesiredPositionSubsteps(temp);
-		//	Motor_Z2.moveToWithTriangularSpeedProfile();
-
-		//	break;
-		//}
 		default:
 			break;
 		}
