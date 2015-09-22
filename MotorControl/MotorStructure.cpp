@@ -207,6 +207,9 @@ void Motor::goHome(void)
 	digitalWrite(_pinEnable, HIGH);// enable
 	// Set position to 0
 	_currentPositionSubsteps = 0;
+
+	// Send confirmation
+	Serial.println(F("Ok"));
 }
 
 // Establish a trapezoidal speed profile

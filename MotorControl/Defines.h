@@ -25,7 +25,7 @@
 #define MAX_POSITION_Y			7000	// In mm
 #define MAX_SPEED_Y				180	// TODO: update this value to be representative
 #define MM_PER_STEP_Y			127         //0.127
-#define HOMING_DELAY_Y			80	// Higher is slower
+#define HOMING_DELAY_Y			100	// Higher is slower
 #define SUB_STEP_NUMBER_Y		16
 #define MAX_DELAY_Y				1000	// In microsecond
 
@@ -45,7 +45,7 @@
 #define PIN_DIR_Z2				28
 #define PIN_ENABLE_Z2			24
 #define PIN_LMSWITCH_Z2			14
-#define MAX_POSITION_Z2			3700
+#define MAX_POSITION_Z2			3510	// Value because of simple pipette
 #define MAX_SPEED_Z2			100	// TODO: update this value to be representative
 #define MM_PER_STEP_Z2			40         //0.640
 #define HOMING_DELAY_Z2			80
